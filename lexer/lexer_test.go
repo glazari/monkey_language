@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestNextTokenMaster(t *testing.T) {
+func TestNextToken(t *testing.T) {
 	type test struct {
 		id     string
 		input  string
@@ -123,6 +123,24 @@ let result = add(five, ten);
 				{Type: token.SEMICOLON, Literal: ";"},
 
 				{Type: token.RBRACE, Literal: "}"},
+			},
+		},
+		{
+			id: "double letter tokens != and ==",
+			input: `
+			10 == 10;
+			10 != 9;
+			`,
+			tokens: []token.Token{
+				{Type: token.INT, Literal: "10"},
+				{Type: token.EQ, Literal: "=="},
+				{Type: token.INT, Literal: "10"},
+				{Type: token.SEMICOLON, Literal: ";"},
+
+				{Type: token.INT, Literal: "10"},
+				{Type: token.NOT_EQ, Literal: "!="},
+				{Type: token.INT, Literal: "9"},
+				{Type: token.SEMICOLON, Literal: ";"},
 			},
 		},
 	}
