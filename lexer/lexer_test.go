@@ -5,44 +5,31 @@ import (
 	"testing"
 )
 
-func TestNextToken(t *testing.T) {
-	input := `=+(){},;`
-
+func TestNextTokenMaster(t *testing.T) {
 	type test struct {
-		expectedType    token.TokenType
-		expectedLiteral string
+		id     string
+		input  string
+		tokens []token.Token
 	}
 
 	cases := []test{
-		{token.ASSIGN, "="},
-		{token.PLUS, "+"},
-		{token.LPAREN, "("},
-		{token.RPAREN, ")"},
-		{token.LBRACE, "{"},
-		{token.RBRACE, "}"},
-		{token.COMMA, ","},
-		{token.SEMICOLON, ";"},
-		{token.EOF, ""},
-	}
-
-	l := New(input)
-
-	for i, tt := range cases {
-		tok := l.NextToken()
-		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
-				i, tt.expectedType, tok.Type)
-		}
-
-		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
-				i, tt.expectedLiteral, tok.Literal)
-		}
-	}
-}
-
-func TestNextToken2(t *testing.T) {
-	input := `let five = 5;
+		{
+			id:    "simple",
+			input: "=+(){},;",
+			tokens: []token.Token{
+				{Type: token.ASSIGN, Literal: "="},
+				{Type: token.PLUS, Literal: "+"},
+				{Type: token.LPAREN, Literal: "("},
+				{Type: token.RPAREN, Literal: ")"},
+				{Type: token.LBRACE, Literal: "{"},
+				{Type: token.RBRACE, Literal: "}"},
+				{Type: token.COMMA, Literal: ","},
+				{Type: token.SEMICOLON, Literal: ";"},
+				{Type: token.EOF, Literal: ""}},
+		},
+		{
+			id: "add key words",
+			input: `let five = 5;
 let ten = 10;
 
 let add = fn(x, y) {
@@ -51,79 +38,77 @@ let add = fn(x, y) {
 
 let result = add(five, ten);
 !-/*5;
-5 < 10 > 5;
-`
+5 < 10 > 5;`,
+			tokens: []token.Token{
+				{Type: token.LET, Literal: "let"},
+				{Type: token.IDENT, Literal: "five"},
+				{Type: token.ASSIGN, Literal: "="},
+				{Type: token.INT, Literal: "5"},
+				{Type: token.SEMICOLON, Literal: ";"},
+				{Type: token.LET, Literal: "let"},
+				{Type: token.IDENT, Literal: "ten"},
+				{Type: token.ASSIGN, Literal: "="},
+				{Type: token.INT, Literal: "10"},
+				{Type: token.SEMICOLON, Literal: ";"},
+				{Type: token.LET, Literal: "let"},
+				{Type: token.IDENT, Literal: "add"},
+				{Type: token.ASSIGN, Literal: "="},
+				{Type: token.FUNCTION, Literal: "fn"},
+				{Type: token.LPAREN, Literal: "("},
+				{Type: token.IDENT, Literal: "x"},
+				{Type: token.COMMA, Literal: ","},
+				{Type: token.IDENT, Literal: "y"},
+				{Type: token.RPAREN, Literal: ")"},
+				{Type: token.LBRACE, Literal: "{"},
+				{Type: token.IDENT, Literal: "x"},
+				{Type: token.PLUS, Literal: "+"},
+				{Type: token.IDENT, Literal: "y"},
+				{Type: token.SEMICOLON, Literal: ";"},
+				{Type: token.RBRACE, Literal: "}"},
+				{Type: token.SEMICOLON, Literal: ";"},
+				{Type: token.LET, Literal: "let"},
+				{Type: token.IDENT, Literal: "result"},
+				{Type: token.ASSIGN, Literal: "="},
+				{Type: token.IDENT, Literal: "add"},
+				{Type: token.LPAREN, Literal: "("},
+				{Type: token.IDENT, Literal: "five"},
+				{Type: token.COMMA, Literal: ","},
+				{Type: token.IDENT, Literal: "ten"},
+				{Type: token.RPAREN, Literal: ")"},
+				{Type: token.SEMICOLON, Literal: ";"},
 
-	type test struct {
-		expectedType    token.TokenType
-		expectedLiteral string
+				{Type: token.BANG, Literal: "!"},
+				{Type: token.MINUS, Literal: "-"},
+				{Type: token.SLASH, Literal: "/"},
+				{Type: token.ASTERISK, Literal: "*"},
+				{Type: token.INT, Literal: "5"},
+				{Type: token.SEMICOLON, Literal: ";"},
+				{Type: token.INT, Literal: "5"},
+				{Type: token.LT, Literal: "<"},
+				{Type: token.INT, Literal: "10"},
+				{Type: token.GT, Literal: ">"},
+				{Type: token.INT, Literal: "5"},
+				{Type: token.SEMICOLON, Literal: ";"},
+				{Type: token.EOF, Literal: ""},
+			},
+		},
 	}
 
-	cases := []test{
-		{token.LET, "let"},
-		{token.IDENT, "five"},
-		{token.ASSIGN, "="},
-		{token.INT, "5"},
-		{token.SEMICOLON, ";"},
-		{token.LET, "let"},
-		{token.IDENT, "ten"},
-		{token.ASSIGN, "="},
-		{token.INT, "10"},
-		{token.SEMICOLON, ";"},
-		{token.LET, "let"},
-		{token.IDENT, "add"},
-		{token.ASSIGN, "="},
-		{token.FUNCTION, "fn"},
-		{token.LPAREN, "("},
-		{token.IDENT, "x"},
-		{token.COMMA, ","},
-		{token.IDENT, "y"},
-		{token.RPAREN, ")"},
-		{token.LBRACE, "{"},
-		{token.IDENT, "x"},
-		{token.PLUS, "+"},
-		{token.IDENT, "y"},
-		{token.SEMICOLON, ";"},
-		{token.RBRACE, "}"},
-		{token.SEMICOLON, ";"},
-		{token.LET, "let"},
-		{token.IDENT, "result"},
-		{token.ASSIGN, "="},
-		{token.IDENT, "add"},
-		{token.LPAREN, "("},
-		{token.IDENT, "five"},
-		{token.COMMA, ","},
-		{token.IDENT, "ten"},
-		{token.RPAREN, ")"},
-		{token.SEMICOLON, ";"},
+	for _, tc := range cases {
+		t.Run(tc.id, func(t *testing.T) {
+			l := New(tc.input)
+			for i, tt := range tc.tokens {
+				tok := l.NextToken()
+				if tok.Type != tt.Type {
+					t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
+						i, tt.Type, tok.Type)
+				}
 
-		{token.BANG, "!"},
-		{token.MINUS, "-"},
-		{token.SLASH, "/"},
-		{token.ASTERISK, "*"},
-		{token.INT, "5"},
-		{token.SEMICOLON, ";"},
-		{token.INT, "5"},
-		{token.LT, "<"},
-		{token.INT, "10"},
-		{token.GT, ">"},
-		{token.INT, "5"},
-		{token.SEMICOLON, ";"},
-		{token.EOF, ""},
-	}
-
-	l := New(input)
-
-	for i, tt := range cases {
-		tok := l.NextToken()
-		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
-				i, tt.expectedType, tok.Type)
-		}
-
-		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
-				i, tt.expectedLiteral, tok.Literal)
-		}
+				if tok.Literal != tt.Literal {
+					t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%q",
+						i, tt.Literal, tok.Literal)
+				}
+			}
+		})
 	}
 }
