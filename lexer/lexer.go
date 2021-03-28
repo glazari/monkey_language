@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"monkey/token"
 )
 
@@ -96,7 +95,6 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Literal = l.readNumber()
 			return tok
 		} else {
-			fmt.Println(string(l.ch))
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
 	}
