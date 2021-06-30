@@ -1,5 +1,8 @@
 1 + 5 + 3;
 
+let a = 40;
+let wildfire = 89;
+
 if (true) { 10 } else {20};
 
 if (true) { 
